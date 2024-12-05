@@ -29,7 +29,7 @@ function show_help() {
   echo "  -h, --help         Show this help message and exit"
   echo
   echo "Example:"
-  echo "  $0 -s usernam_source -r repo_name -f username_yourname -t repo_name -k ghp_xxxxxxxxxxxx"
+  echo " bash $0 -s usernam_source -r repo_name -f username_yourname -t repo_name -k ghp_xxxxxxxxxxxx"
 }
 
 # 解析参数
