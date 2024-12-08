@@ -19,7 +19,7 @@ curl -O https://raw.githubusercontent.com/loohalh/githubSyncFork/refs/heads/main
 bash sync_fork.sh -s usernam_source -r repo_name -f username_yourname -t repo_name -k ghp_xxxxxxxxxxxx
 
 ### help
-bash sync_fork.sh -s
+bash sync_fork.sh -h
 
 ### 参数说明
 -s <SOURCE_OWNER>  源仓库用户
