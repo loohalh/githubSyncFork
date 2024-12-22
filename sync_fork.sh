@@ -8,9 +8,9 @@
 # 依赖git、jq,请自行安装
 
 
-SOURCE_OWNER=""   # 源仓库用户名
+SOURCE_OWNER=""   # 源仓库用户
 SOURCE_REPO=""    # 源仓库名称
-FORK_OWNER=""     # fork仓库用户名
+FORK_OWNER=""     # fork仓库用户
 FORK_REPO=""      # fork仓库名称
 GITHUB_TOKEN=""   # gitHub Token
 
@@ -29,7 +29,7 @@ function show_help() {
   echo "  -h, --help         Show this help message and exit"
   echo
   echo "Example:"
-  echo " bash $0 -s usernam_source -r repo_name -f username_yourname -t repo_name -k ghp_xxxxxxxxxxxx"
+  echo "  $0 -s usernam_source -r repo_name -f username_yourname -t repo_name -k ghp_xxxxxxxxxxxx"
 }
 
 # 解析参数
@@ -49,13 +49,24 @@ while getopts "s:r:f:t:k:h" opt; do
   esac
 done
 
-# 核对必要参数
+# 必要参数
 if [[ -z "$SOURCE_OWNER" || -z "$SOURCE_REPO" || -z "$FORK_OWNER" || -z "$FORK_REPO" || -z "$GITHUB_TOKEN" ]]; then
   echo "Error: Missing required arguments."
   show_help
   exit 1
 fi
 
+echo -e "\n\n\n\n"
+start_time=$(date +"%Y-%m-%d %H:%M:%S.%3N")
+echo -e "-----------------开始：start_time:$start_time -------------------"
+
+
+#进入工作目录
+to_dir() {
+    SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+    cd "$SCRIPT_DIR" || exit
+    echo "Current script execution path ：$SCRIPT_DIR"
+}
 
 # clone并进入 Fork 仓库目录
 clone_repo() {
@@ -86,12 +97,16 @@ fetch_update_branch() {
     
     for branch in $branches; do
         echo "🌿 Fetching branch: $branch"
+        git branch temp
+        git checkout temp
+        git branch -D $branch
         git fetch upstream $branch:$branch --depth=1
+#        git reset --hard upstream/$branch
+#        git branch $branch
         git checkout $branch
-        git pull --depth=1 upstream $branch
-        
         echo "🚀 Pushing branch: $branch to fork..."
-        git push origin $branch
+        git push --force origin $branch
+        git branch -D temp
     done
     
     echo "🎉 All branches have been cloned and pushed to the fork repository!"
@@ -260,10 +275,15 @@ fetch_update_release_workflow() {
 }
 
 #执行
+to_dir
 clone_repo
 fetch_update_branch
 fetch_tags
 update_tags
 fetch_update_release_workflow
+
+end_time=$(date +"%Y-%m-%d %H:%M:%S.%3N")
+echo -e "-----------------结束：end_time: $end_time -------------------"
+
 
 
